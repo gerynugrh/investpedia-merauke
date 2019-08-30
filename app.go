@@ -1,21 +1,45 @@
 package main
 
 import (
+	"fmt"
+	"github.com/gerywahyu/investpedia/merauke/model"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"github.com/line/line-bot-sdk-go/linebot"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
-	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 
 var bot *linebot.Client
 
 func main() {
+	var cs string
+	if os.Getenv("GO_ENV") == "heroku" {
+		cs = os.Getenv("DATABASE_URL")
+	} else {
+		cs = "host=localhost port=5432 user=merauke dbname=merauke password=merauke sslmode=disable"
+	}
+	db, err := gorm.Open("postgres", cs)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	defer db.Close()
+	model.Migrate(db)
+
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	err = e.Start(":8123")
+	if err != nil {
+		return
+	}
 }
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +68,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						id = event.Source.RoomID
 					}
 				}
-				test(id, message.Text)
+				fmt.Print(id)
 				quota, err := bot.GetMessageQuota().Do()
 				if err != nil {
 					log.Println("Quota err:", err)

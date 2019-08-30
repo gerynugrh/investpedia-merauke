@@ -11,10 +11,10 @@ require (
 	github.com/google/go-cmp v0.3.1 // indirect
 	github.com/google/pprof v0.0.0-20190723021845-34ac40c74b70 // indirect
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
-	github.com/jinzhu/gorm v1.9.10 // indirect
+	github.com/jinzhu/gorm v1.9.10
 	github.com/julienschmidt/httprouter v1.2.0
 	github.com/kr/pty v1.1.8 // indirect
-	github.com/labstack/echo v3.3.10+incompatible // indirect
+	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/lib/pq v1.2.0
 	github.com/line/line-bot-sdk-go v6.3.0+incompatible
