@@ -28,7 +28,7 @@ func initHandler(handler *internal.Handler) error {
 
 	// Initialize SQL DB
 	// NOTE: change localhost:5432 to postgres:5432 if you use docker
-	db, err := sql.Open("postgres", "postgres://postgres:postgres@172.32.4.208:5432/?sslmode=disable")
+	db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/?sslmode=disable")
 	if err != nil {
 		return err
 	}
@@ -46,18 +46,8 @@ func initRouter(router *httprouter.Router, handler *internal.Handler) {
 	router.POST("/user", handler.InsertUser)
 	router.PUT("/user/:userID", handler.EditUserByID)
 	router.DELETE("/user/:userID", handler.DeleteUserByID)
-
-	// Single book API
-	router.GET("/book/:bookID", handler.GetBookByID)
-	router.POST("/book", handler.InsertBook)
-	router.PUT("/book/:bookID", handler.EditBook)
-	router.DELETE("/book/:bookID", handler.DeleteBookByID)
-
-	// Batch book API
-	router.POST("/books", handler.InsertMultipleBooks)
-
-	// Lending API
-	router.POST("/lend", handler.LendBook)
+	// Login
+	router.POST("/login", handler.Login)
 
 	// `httprouter` library uses `ServeHTTP` method for it's 404 pages
 	router.NotFound = handler
@@ -82,8 +72,6 @@ func main() {
 
 	//// Line Handler
 	http.HandleFunc("/callback", callbackHandler)
-	//http.HandleFunc("/", greet)
-
 	fmt.Printf("Apps served on :%d\n", args.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", args.Port), router))
 }
