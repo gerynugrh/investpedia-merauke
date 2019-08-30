@@ -6,6 +6,7 @@ import (
 	"github.com/line/line-bot-sdk-go/linebot"
 	"log"
 	"net/http"
+	"os"
 )
 
 
@@ -16,7 +17,9 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.POST("/callback",callback)
-	err := e.Start(":3000")
+
+	port := os.Getenv("PORT")
+	err := e.Start(":"+port)
 	if err != nil {
 		log.Println(err)
 		return
