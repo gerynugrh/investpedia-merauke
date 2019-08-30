@@ -30,12 +30,13 @@ type Credential struct {
 type Product struct {
 	ID int `json:"id"`
 	ProductName string `json:"product_name"`
-	Price string `json:"price"`
+	Price float32 `json:"price"`
 }
 type Investment struct {
 	ID int `json:"id"`
-	RoomId string `json:"room_id"`
 	ProductId int `json:"product_id"`
-	TotalPayment string `json:"total_payment"`
+	TotalPayment float32 `json:"total_payment"`
+	Goal float32 `json:"goal"`
+	Date string `json:"date"`
 }
 

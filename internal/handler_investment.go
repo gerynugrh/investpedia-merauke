@@ -10,36 +10,27 @@ import (
 	"strconv"
 )
 
-func (h *Handler) GetInvestmentByID(w http.ResponseWriter, r *http.Request, param httprouter.Params) {
-	productID, err := strconv.ParseInt(param.ByName("productID"), 10, 64)
+func (h *Handler) GetInvestmentByRoomID(w http.ResponseWriter, r *http.Request, param httprouter.Params) {
+	roomID := param.ByName("roomID")
+
+	query := fmt.Sprintf("SELECT id, room_id,product_id,total_payment FROM investments WHERE room_id=$1")
+
+	rows, err := h.DB.Query(query, roomID)
 	if err != nil {
 		log.Println(err)
-		renderJSON(w, []byte(`
-		{
-			"message":"Gaboleh nakal :)"
-		}
-		`), http.StatusBadRequest)
 		return
 	}
-	query := fmt.Sprintf("SELECT id, product_name,price FROM products WHERE id=$1")
-
-	rows, err := h.DB.Query(query, productID)
-	if err != nil {
-		log.Printf("[internal][GetProductByID] fail to select product product_id:%s :%+v\n",
-			param.ByName("productID"), err)
-		return
-	}
-	var products []Product
+	var invests []Investment
 	for rows.Next() {
-		product := Product{}
-		err := rows.Scan(&product.ID,&product.ProductName, &product.Price)
+		invest := Investment{}
+		err := rows.Scan(&invest.ID,&invest.ProductId,&invest.RoomId,&invest.TotalPayment)
 		if err != nil {
 			log.Println()
 			return
 		}
-		products = append(products, product)
+		invests = append(invests, invest)
 	}
-	bytes, err := json.Marshal(products)
+	bytes, err := json.Marshal(invests)
 	if err != nil {
 		log.Println()
 		return
@@ -47,7 +38,7 @@ func (h *Handler) GetInvestmentByID(w http.ResponseWriter, r *http.Request, para
 	renderJSON(w, bytes, http.StatusOK)
 }
 
-func (h *Handler) InsertProduct(w http.ResponseWriter, r *http.Request, param httprouter.Params) {
+func (h *Handler) AddNewInvest(w http.ResponseWriter, r *http.Request, param httprouter.Params) {
 	// read json body
 	body, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
@@ -57,14 +48,13 @@ func (h *Handler) InsertProduct(w http.ResponseWriter, r *http.Request, param ht
 			`), http.StatusBadRequest)
 		return
 	}
-	var product Product
-	err = json.Unmarshal(body, &product)
+	var invest Investment
+	err = json.Unmarshal(body, &invest)
 	if err != nil {
-		log.Printf("[internal][InsertProduct] fail to convert json into array :%+v\n",
-			err)
+		log.Println(err)
 		return
 	}
-	query := fmt.Sprintf("INSERT INTO products (id,product_name,price) VALUES (%d,'%s',%d) ",product.ID, product.ProductName, product.Price)
+	query := fmt.Sprintf("INSERT INTO investment (id,room_id,product_id,total_payment) VALUES (%d,'%s',%d) ",invest.ID, invest.RoomId, invest.ProductId,invest.TotalPayment)
 	_, err = h.DB.Query(query)
 	if err != nil {
 		log.Println(err)
