@@ -29,14 +29,14 @@ func (i *InvestmentHandler) AddPerson(investment *model.Investment, username str
 
 func (i *InvestmentHandler) GetById(id int) *model.Investment {
 	var investment model.Investment
-	i.Conn.Where("id = ?").First(&investment)
+	i.Conn.Where("id = ?", id).First(&investment)
 
 	return &investment
 }
 
 func (i *InvestmentHandler) GetProductById(id int) *model.Product {
 	var product model.Product
-	i.Conn.Where("id = ?").First(&product)
+	i.Conn.Where("id = ?", id).First(&product)
 
 	return &product
 }
