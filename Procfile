@@ -1,2 +1,2 @@
-web: investpedia-merauke
+web: merauke
 
