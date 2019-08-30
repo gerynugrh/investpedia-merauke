@@ -40,7 +40,7 @@ func (u *UserHandler) Login(username string, password string) (bool, error) {
 
 func (u *UserHandler) ShowInvestment(username string) []model.Investment {
 	var user model.User
-	u.Conn.Where("username = ?", username).First(&user)
+	u.Conn.Preload("Investments").Where("line_id = ?", username).First(&user)
 
 	return user.Investments
 }

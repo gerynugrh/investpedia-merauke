@@ -20,6 +20,7 @@ func NewUserDelivery(e *echo.Echo, handler *handler.UserHandler) {
 	}
 	e.POST("/login", delivery.Login)
 	e.POST("/register", delivery.Register)
+	e.POST("/user", delivery.ShowInvestment)
 }
 
 type LoginRequest struct {
@@ -88,4 +89,25 @@ func (u *UserDelivery) Register(c echo.Context) error {
 
 	response := RegisterResponse{Success: true}
 	return c.JSON(http.StatusOK, response)
+}
+
+type ShowInvestmentRequest struct {
+	Username 	string `json:"username"`
+}
+
+type ShowInvestmentResponse struct {
+	Investments	[]model.Investment `json:"payload"`
+}
+
+func (u *UserDelivery) ShowInvestment(c echo.Context) error {
+	var req ShowInvestmentRequest
+	err := c.Bind(&req)
+	if err != nil {
+		return err
+	}
+
+	investments := u.Handler.ShowInvestment(req.Username)
+	res := ShowInvestmentResponse{Investments: investments}
+
+	return c.JSON(http.StatusOK, res)
 }
