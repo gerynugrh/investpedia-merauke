@@ -57,6 +57,10 @@ func (i *InvestmentDelivery) Create(c echo.Context) error {
 		return err
 	}
 	var product *model.Product
+	var value int64
+	var name string
+	name = request.Name
+	value = request.Goal
 	if request.ProductId != "" {
 		id, err := strconv.Atoi(request.ProductId)
 		if err != nil {
@@ -64,8 +68,10 @@ func (i *InvestmentDelivery) Create(c echo.Context) error {
 			return err
 		}
 		product = i.Handler.GetProductById(id)
+		value = product.Price
+		name = product.Name
 	}
-	investment, err := i.Handler.Create(request.Name, request.Goal, request.Year, request.Current, product)
+	investment, err := i.Handler.Create(name, value, request.Year, request.Current, product)
 	i.Handler.AddPerson(investment, request.LineId)
 	response := ShowResponse{Investment: *investment}
 
