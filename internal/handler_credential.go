@@ -3,7 +3,6 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/julienschmidt/httprouter"
 	"io/ioutil"
 	"log"
@@ -56,8 +55,6 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request, param httprouter
 	`), http.StatusOK)
 	}
 }
-
-func createToken()
 
 func hashAndSalt(pwd []byte) string {
 
