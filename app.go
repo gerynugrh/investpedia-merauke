@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/gerywahyu/investpedia/merauke/model"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -27,6 +30,21 @@ func main() {
 	dp = new(processor.DialogFlowProcessor)
 	err = dp.Init("investpedia-chjbgd","en","Asia/Bangkok")
 	bot, err = linebot.New(cs, cat)
+	var connStr string
+	if os.Getenv("GO_ENV") == "heroku" {
+		connStr = os.Getenv("DATABASE_URL")
+	} else {
+		connStr = "host=localhost port=5432 user=merauke dbname=merauke password=merauke sslmode=disable"
+	}
+	db, err := gorm.Open("postgres", connStr)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	defer db.Close()
+	model.Migrate(db)
+
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
