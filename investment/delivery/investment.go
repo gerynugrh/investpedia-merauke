@@ -1,13 +1,11 @@
 package delivery
 
 import (
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gerywahyu/investpedia/merauke/investment/handler"
 	"github.com/gerywahyu/investpedia/merauke/model"
 	"github.com/labstack/echo"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 )
 
@@ -21,6 +19,7 @@ func NewInvestmentDelivery(e *echo.Echo, handler *handler.InvestmentHandler) {
 	}
 	e.GET("/investment", delivery.Show)
 	e.POST("/investment", delivery.Create)
+	e.POST("/add_find", delivery.AddFund)
 }
 
 type ShowResponse struct {
@@ -78,6 +77,10 @@ type AddFundRequest struct {
 	Amount		int64 `json:"amount"`
 }
 
+type AddFundResponse struct {
+	Success	bool `json:"success"`
+}
+
 func (i *InvestmentDelivery) AddFund(c echo.Context) error {
 	var request AddFundRequest
 	err := c.Bind(&request)
@@ -93,4 +96,8 @@ func (i *InvestmentDelivery) AddFund(c echo.Context) error {
 	}
 
 	i.Handler.AddFund(id, request.LineId, request.Amount)
+	response := AddFundResponse{
+		Success: true,
+	}
+	return c.JSON(http.StatusOK, response)
 }
