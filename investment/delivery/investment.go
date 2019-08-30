@@ -1,11 +1,13 @@
 package delivery
 
 import (
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gerywahyu/investpedia/merauke/investment/handler"
 	"github.com/gerywahyu/investpedia/merauke/model"
 	"github.com/labstack/echo"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -46,8 +48,22 @@ type CreateRequest struct {
 }
 
 func (i *InvestmentDelivery) Create(c echo.Context) error {
+	tokenString := c.Request().Header.Get("authorization")
+	claims := model.Claims{}
+	secret := os.Getenv("SECRET")
+	if secret == "" {
+		secret = "secret"
+	}
+	_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secret), nil
+	})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
 	var request CreateRequest
-	err := c.Bind(&request)
+	err = c.Bind(&request)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -62,6 +78,7 @@ func (i *InvestmentDelivery) Create(c echo.Context) error {
 		product = i.Handler.GetProductById(id)
 	}
 	investment, err := i.Handler.Create(request.Name, request.Goal, request.Year, request.Current, product)
+	i.Handler.AddPerson(investment, claims.Username)
 	response := ShowResponse{Investment: *investment}
 
 	return c.JSON(http.StatusOK, response)
