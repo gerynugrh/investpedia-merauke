@@ -19,7 +19,7 @@ func NewInvestmentDelivery(e *echo.Echo, handler *handler.InvestmentHandler) {
 	}
 	e.GET("/investment", delivery.Show)
 	e.POST("/investment", delivery.Create)
-	e.POST("/add_find", delivery.AddFund)
+	e.POST("/add_fund", delivery.AddFund)
 }
 
 type ShowResponse struct {
