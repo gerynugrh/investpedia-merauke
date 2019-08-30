@@ -46,6 +46,7 @@ func initRouter(router *httprouter.Router, handler *internal.Handler) {
 	router.POST("/user", handler.InsertUser)
 	router.PUT("/user/:userID", handler.EditUserByID)
 	router.DELETE("/user/:userID", handler.DeleteUserByID)
+
 	// Login
 	router.POST("/login", handler.Login)
 
