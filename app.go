@@ -11,7 +11,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 
@@ -36,47 +35,46 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	err = e.Start(":8123")
+	e.POST("/callback",callback)
+
+	port := os.Getenv("PORT")
+	err := e.Start(":"+port)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 }
 
-func callbackHandler(w http.ResponseWriter, r *http.Request) {
-	events, err := bot.ParseRequest(r)
-
-	if err != nil {
+func callback(c echo.Context) error{
+	events,err := bot.ParseRequest(c.Request())
+	if err != nil{
 		if err == linebot.ErrInvalidSignature {
-			w.WriteHeader(400)
-		} else {
-			w.WriteHeader(500)
+			c.Response().WriteHeader(400)
+		} else{
+			c.Response().WriteHeader(500)
 		}
-		return
+		return c.JSON(http.StatusBadRequest,err.Error())
 	}
-
-	for _, event := range events {
-		if event.Type == linebot.EventTypeMessage {
-			switch message := event.Message.(type) {
+	for _,event := range events{
+		if event.Type == linebot.EventTypeMessage{
+			switch message:=event.Message.(type) {
 			case *linebot.TextMessage:
 				var id string
-				if event.Source.GroupID == "" && event.Source.RoomID == "" {
+				if event.Source.GroupID == "" && event.Source.RoomID == ""{
 					id = event.Source.UserID
-				} else {
+				} else{
 					if event.Source.GroupID != "" {
 						id = event.Source.GroupID
 					} else {
 						id = event.Source.RoomID
 					}
 				}
-				fmt.Print(id)
-				quota, err := bot.GetMessageQuota().Do()
-				if err != nil {
-					log.Println("Quota err:", err)
-				}
-				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.ID+":"+message.Text+" OK! remain message:"+strconv.FormatInt(quota.Value, 10))).Do(); err != nil {
-					log.Print(err)
+				log.Println(id,message.Text)
+				if _,err = bot.ReplyMessage(event.ReplyToken,linebot.NewTextMessage(message.Text)).Do();err!=nil{
+					log.Println(err)
 				}
 			}
 		}
 	}
+	return nil
 }

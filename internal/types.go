@@ -27,4 +27,16 @@ type Credential struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+type Product struct {
+	ID int `json:"id"`
+	ProductName string `json:"product_name"`
+	Price float32 `json:"price"`
+}
+type Investment struct {
+	ID int `json:"id"`
+	ProductId int `json:"product_id"`
+	TotalPayment float32 `json:"total_payment"`
+	Goal float32 `json:"goal"`
+	Date string `json:"date"`
+}
 
