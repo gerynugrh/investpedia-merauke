@@ -17,4 +17,5 @@ type NLPResponse struct {
 	Intent string
 	Confidence float32
 	Entities map[string]string
+	Fullfillment string
 }
