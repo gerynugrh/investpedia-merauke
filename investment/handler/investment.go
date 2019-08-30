@@ -21,9 +21,17 @@ func (i *InvestmentHandler) Create(name string, goal int64, year int, current in
 	return &investment, nil
 }
 
+func (i *InvestmentHandler) AddFund(id int, username string, income int64) {
+	investment := i.GetById(id)
+	var user model.User
+	i.Conn.Where("line_id = ?", username).First(&user)
+	investment.Current += income
+	i.Conn.Save(investment)
+}
+
 func (i *InvestmentHandler) AddPerson(investment *model.Investment, username string) {
 	var user model.User
-	i.Conn.Where("username = ?", username).First(&user)
+	i.Conn.Where("line_id = ?", username).First(&user)
 	i.Conn.Model(&user).Association("Investments").Append(investment)
 }
 

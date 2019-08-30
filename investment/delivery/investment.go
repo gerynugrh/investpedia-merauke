@@ -45,25 +45,14 @@ type CreateRequest struct {
 	Year		int `json:"year"`
 	Current		int64 `json:"current"`
 	ProductId	string `json:"productId"`
+	LineId 		string `json:"line_id"`
 }
 
-func (i *InvestmentDelivery) Create(c echo.Context) error {
-	tokenString := c.Request().Header.Get("authorization")
-	claims := &model.Claims{}
-	secret := os.Getenv("SECRET")
-	if secret == "" {
-		secret = "secret"
-	}
-	_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(secret), nil
-	})
-	if err != nil {
-		log.Println(err)
-		return err
-	}
 
+
+func (i *InvestmentDelivery) Create(c echo.Context) error {
 	var request CreateRequest
-	err = c.Bind(&request)
+	err := c.Bind(&request)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -78,8 +67,30 @@ func (i *InvestmentDelivery) Create(c echo.Context) error {
 		product = i.Handler.GetProductById(id)
 	}
 	investment, err := i.Handler.Create(request.Name, request.Goal, request.Year, request.Current, product)
-	i.Handler.AddPerson(investment, claims.Username)
+	i.Handler.AddPerson(investment, request.LineId)
 	response := ShowResponse{Investment: *investment}
 
 	return c.JSON(http.StatusOK, response)
+}
+
+type AddFundRequest struct {
+	LineId		string `json:"line_id"`
+	Amount		int64 `json:"amount"`
+}
+
+func (i *InvestmentDelivery) AddFund(c echo.Context) error {
+	var request AddFundRequest
+	err := c.Bind(&request)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	id, err := strconv.Atoi(c.QueryParam("id"))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	i.Handler.AddFund(id, request.LineId, request.Amount)
 }
