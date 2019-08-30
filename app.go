@@ -16,6 +16,11 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.POST("/callback",callback)
+	err := e.Start(":3000")
+	if err != nil {
+		log.Println(err)
+		return
+	}
 }
 
 func callback(c echo.Context) error{
