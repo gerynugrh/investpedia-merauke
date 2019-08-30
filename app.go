@@ -2,7 +2,14 @@ package main
 
 import (
 	"fmt"
+	id "github.com/gerywahyu/investpedia/merauke/investment/delivery"
+	ih "github.com/gerywahyu/investpedia/merauke/investment/handler"
 	"github.com/gerywahyu/investpedia/merauke/model"
+	processor "github.com/gerywahyu/investpedia/merauke/processor"
+	pd "github.com/gerywahyu/investpedia/merauke/product/delivery"
+	ph "github.com/gerywahyu/investpedia/merauke/product/handler"
+	ud "github.com/gerywahyu/investpedia/merauke/user/delivery"
+	uh "github.com/gerywahyu/investpedia/merauke/user/handler"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/labstack/echo"
@@ -11,12 +18,26 @@ import (
 	"log"
 	"net/http"
 	"os"
-	processor "github.com/gerywahyu/investpedia/merauke/processor"
 )
 
 
 var bot *linebot.Client
 var dp *processor.DialogFlowProcessor
+
+func createApp(e *echo.Echo, db *gorm.DB) {
+	investmentHandler := ih.InvestmentHandler{
+		Conn: db,
+	}
+	userHandler := uh.UserHandler{
+		Conn: db,
+	}
+	productHandler := ph.ProductHandler{
+		Conn: db,
+	}
+	id.NewInvestmentDelivery(e, &investmentHandler)
+	ud.NewUserDelivery(e, &userHandler)
+	pd.NewProductDelivery(e, &productHandler)
+}
 
 func main() {
 	var err error
@@ -49,6 +70,8 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.POST("/callback",callback)
+
+	createApp(e, db)
 
 	port := os.Getenv("PORT")
 	if port == "" {

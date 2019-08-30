@@ -24,9 +24,9 @@ func (u *UserHandler) Register(username string, password string) (*model.User, e
 }
 
 func (u *UserHandler) Login(username string, password string) (bool, error) {
-	var user *model.User
+	var user model.User
 	u.Conn.Where("username = ?", username).First(&user)
-	if user == nil {
+	if &user == nil {
 		return false, errors.New("can't find user")
 	}
 	success := util.CheckPasswordHash(password, user.Password)

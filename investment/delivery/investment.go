@@ -10,7 +10,15 @@ import (
 )
 
 type InvestmentDelivery struct {
-	Handler handler.InvestmentHandler
+	Handler *handler.InvestmentHandler
+}
+
+func NewInvestmentDelivery(e *echo.Echo, handler *handler.InvestmentHandler) {
+	delivery := &InvestmentDelivery{
+		Handler: handler,
+	}
+	e.GET("/investment", delivery.Show)
+	e.POST("/investment", delivery.Create)
 }
 
 type ShowResponse struct {

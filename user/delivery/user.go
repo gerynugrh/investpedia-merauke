@@ -14,6 +14,14 @@ type UserDelivery struct {
 	Handler *handler.UserHandler
 }
 
+func NewUserDelivery(e *echo.Echo, handler *handler.UserHandler) {
+	delivery := &UserDelivery{
+		Handler:handler,
+	}
+	e.POST("/login", delivery.Login)
+	e.POST("/register", delivery.Register)
+}
+
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -43,8 +51,11 @@ func (u *UserDelivery) Login(c echo.Context) error {
 		Username: loginRequest.Username,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	secret := os.Getenv("secret")
-	tokenString, err := token.SignedString(secret)
+	secret := os.Getenv("SECRET")
+	if secret == "" {
+		secret = "secret"
+	}
+	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return err
 	}
