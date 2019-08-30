@@ -11,14 +11,16 @@ type UserHandler struct {
 	Conn *gorm.DB
 }
 
-func (u *UserHandler) Register(username string, password string) (*model.User, error) {
+func (u *UserHandler) Register(username string, password string, lineId string) (*model.User, error) {
 	hash, err := util.HashPassword(password)
 	if err != nil {
 		return nil, err
 	}
 	user := model.User{
 		Username: username,
-		Password: hash}
+		Password: hash,
+		LineId: lineId,
+	}
 	u.Conn.Create(&user)
 	return &user, nil
 }

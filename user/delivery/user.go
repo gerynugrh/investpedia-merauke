@@ -67,6 +67,7 @@ func (u *UserDelivery) Login(c echo.Context) error {
 type RegisterRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	LineId	 string `json:"line_id"`
 }
 
 type RegisterResponse struct {
@@ -74,13 +75,13 @@ type RegisterResponse struct {
 }
 
 func (u *UserDelivery) Register(c echo.Context) error {
-	var registerRequest RegisterRequest
-	err := c.Bind(&registerRequest)
+	var request RegisterRequest
+	err := c.Bind(&request)
 	if err != nil {
 		return err
 	}
 
-	user, err := u.Handler.Register(registerRequest.Username, registerRequest.Password)
+	user, err := u.Handler.Register(request.Username, request.Password, request.LineId)
 	if user != nil {
 		return err
 	}
