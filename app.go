@@ -200,9 +200,9 @@ func callback(c echo.Context) error	{
             "style": "primary",
             "color": "#42b549",
             "action": {
-              "type": "message",
+              "type": "uri",
               "label": "Tabung disini!",
-              "text": "%s"
+              "uri": "line://app/1614417773-abRdpJXn?i=%s"
             }
           }
         ]
