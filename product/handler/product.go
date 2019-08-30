@@ -15,3 +15,21 @@ func (p *ProductHandler) GetById(productId int) *model.Product {
 
 	return &product
 }
+
+func (p *ProductHandler) Create(name string, image string, price int64) *model.Product {
+	product := model.Product{
+		Name: name,
+		ImageURL: image,
+		Price: price,
+	}
+	p.Conn.Create(&product)
+
+	return &product
+}
+
+func (p *ProductHandler) ShowAll() *[]model.Product {
+	var products []model.Product
+	p.Conn.Find(&products)
+
+	return &products
+}
