@@ -49,7 +49,7 @@ type CreateRequest struct {
 
 func (i *InvestmentDelivery) Create(c echo.Context) error {
 	tokenString := c.Request().Header.Get("authorization")
-	claims := model.Claims{}
+	claims := &model.Claims{}
 	secret := os.Getenv("SECRET")
 	if secret == "" {
 		secret = "secret"

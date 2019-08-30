@@ -43,7 +43,7 @@ func (u *UserDelivery) Login(c echo.Context) error {
 		return err
 	}
 
-	claims := model.Claims{
+	claims := &model.Claims{
 		StandardClaims: jwt.StandardClaims{
 			Issuer: "investpedia",
 			ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
