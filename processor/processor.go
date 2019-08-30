@@ -11,7 +11,7 @@ import (
 	"strconv"
 )
 
-func (dp *DialogFlowProcessor) init(projectID string, lang string, timeZone string) (err error) {
+func (dp *DialogFlowProcessor) Init(projectID string, lang string, timeZone string) (err error) {
 	dp.projectID = projectID
 	dp.lang = lang
 	dp.timeZone = timeZone
@@ -27,7 +27,7 @@ func (dp *DialogFlowProcessor) init(projectID string, lang string, timeZone stri
 	return
 }
 
-func (dp *DialogFlowProcessor) processNLP(rawMessage string, username string) (r NLPResponse) {
+func (dp *DialogFlowProcessor) ProcessNLP(rawMessage string, username string) (r NLPResponse) {
 	sessionID := username
 	request := dialogFlowPB.DetectIntentRequest{
 		Session: fmt.Sprintf("projects/%s/agent/sessions/%s", dp.projectID, sessionID),
@@ -49,9 +49,11 @@ func (dp *DialogFlowProcessor) processNLP(rawMessage string, username string) (r
 		return
 	}
 	queryResult := response.GetQueryResult()
+	//fmt.Printf("%#v",queryResult)
 	if queryResult.Intent != nil {
 		r.Intent = queryResult.Intent.DisplayName
 		r.Confidence = queryResult.IntentDetectionConfidence
+		r.Fullfillment = queryResult.FulfillmentText
 	}
 	r.Entities = make(map[string]string)
 	params := queryResult.Parameters.GetFields()
