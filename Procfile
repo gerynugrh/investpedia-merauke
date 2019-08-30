@@ -1,2 +1,2 @@
-web: merauke
+web: ./merauke
 
