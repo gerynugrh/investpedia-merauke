@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gerywahyu/investpedia/merauke/model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -17,13 +16,13 @@ import (
 var bot *linebot.Client
 
 func main() {
-	var cs string
+	var connStr string
 	if os.Getenv("GO_ENV") == "heroku" {
-		cs = os.Getenv("DATABASE_URL")
+		connStr = os.Getenv("DATABASE_URL")
 	} else {
-		cs = "host=localhost port=5432 user=merauke dbname=merauke password=merauke sslmode=disable"
+		connStr = "host=localhost port=5432 user=merauke dbname=merauke password=merauke sslmode=disable"
 	}
-	db, err := gorm.Open("postgres", cs)
+	db, err := gorm.Open("postgres", connStr)
 	if err != nil {
 		log.Print(err)
 		return
@@ -38,7 +37,7 @@ func main() {
 	e.POST("/callback",callback)
 
 	port := os.Getenv("PORT")
-	err := e.Start(":"+port)
+	err = e.Start(":"+port)
 	if err != nil {
 		log.Println(err)
 		return
