@@ -64,11 +64,16 @@ func main() {
 
 func callback(c echo.Context) error	{
 
-	jsonListInvestasi := []byte (`
+	jsonListInvestasi :=  `
 		{
-  "type": "carousel",
-  "contents": [
-    {
+		  "type": "carousel",
+			  "contents": [
+				%s
+			  ]
+			}
+		`
+
+	jsonInvestasiTemplate := `{
       "type": "bubble",
       "size": "mega",
       "header": {
@@ -77,8 +82,8 @@ func callback(c echo.Context) error	{
         "contents": [
           {
             "type": "text",
-            "text": "MacBook Pro Retina 2019 8GB 256GB",
-            "color": "#ffffff",
+            "text": "%s",
+            "color": "#3d3d3d",
             "align": "start",
             "size": "xl",
             "gravity": "center",
@@ -97,7 +102,7 @@ func callback(c echo.Context) error	{
         "contents": [
           {
             "type": "text",
-            "text": "Rp. 10.459.921,-",
+            "text": "Rp. %s,-",
             "color": "#3d3d3d",
             "align": "start",
             "size": "lg",
@@ -106,7 +111,7 @@ func callback(c echo.Context) error	{
           },
           {
             "type": "text",
-            "text": "dari Rp. 24.999.999,-",
+            "text": "dari Rp. %s,-",
             "color": "#8b8b8b",
             "align": "start",
             "size": "xs",
@@ -124,7 +129,7 @@ func callback(c echo.Context) error	{
                     "type": "filler"
                   }
                 ],
-                "width": "70%",
+                "width": "%s",
                 "backgroundColor": "#fa591d",
                 "height": "16px"
               }
@@ -136,7 +141,7 @@ func callback(c echo.Context) error	{
           },
           {
             "type": "text",
-            "text": "Target 8 bulan dari sekarang",
+            "text": "Target %s dari sekarang",
             "color": "#fa591d",
             "weight": "bold",
             "align": "start",
@@ -150,7 +155,7 @@ func callback(c echo.Context) error	{
             "contents": [
               {
                 "type": "text",
-                "text": "Rekomendasi: Rp. 899.000/bulan",
+                "text": "Rekomendasi: Rp. %s /bulan",
                 "color": "#8C8C8C",
                 "size": "xs",
                 "wrap": true
@@ -174,15 +179,12 @@ func callback(c echo.Context) error	{
             "action": {
               "type": "message",
               "label": "Tabung disini!",
-              "text": "123"
+              "text": "%s"
             }
           }
         ]
       }
-    }
-  ]
-}
-`	)
+    }`
 
 	events,err := bot.ParseRequest(c.Request())
 	if err != nil{
@@ -214,14 +216,29 @@ func callback(c echo.Context) error	{
 					log.Println(err)
 				}
 				if resp.Fullfillment == "*Daftar Progress Investasi*"{
-					container, err := linebot.UnmarshalFlexMessageJSON(jsonListInvestasi)
+
+					productWithData := fmt.Sprintf(jsonInvestasiTemplate, "Macbook", "15.000.000", "24.000.000", "10%", "7 bulan", "300.000", "789")
+
+					data := []byte(fmt.Sprintf(jsonListInvestasi, productWithData))
+
+					container, err := linebot.UnmarshalFlexMessageJSON(data)
 
 					if _,err = bot.PushMessage(id,linebot.NewFlexMessage("list investas", container)).Do(); err!=nil{
 						log.Println(err)
 					}
 				}
 				if resp.Fullfillment == "*Pilihan Investasi*"{
-					container, err := linebot.UnmarshalFlexMessageJSON(jsonListInvestasi)
+					productWithData := fmt.Sprintf(jsonInvestasiTemplate, "Macbook", "15.000.000", "24.000.000", "10", "7 bulan", "300.000", "789")
+					productWithData += ","
+					productWithData += fmt.Sprintf(jsonInvestasiTemplate, "Macbook", "15.000.000", "24.000.000", "10", "7 bulan", "300.000", "789")
+					productWithData += ","
+					productWithData += fmt.Sprintf(jsonInvestasiTemplate, "Macbook", "15.000.000", "24.000.000", "10", "7 bulan", "300.000", "789")
+
+					listWithData := fmt.Sprintf(jsonListInvestasi, productWithData)
+					log.Println(listWithData)
+					data := []byte(listWithData)
+
+					container, err := linebot.UnmarshalFlexMessageJSON(data)
 
 					if _,err = bot.PushMessage(id,linebot.NewFlexMessage("list investas", container)).Do(); err!=nil{
 						log.Println(err)
