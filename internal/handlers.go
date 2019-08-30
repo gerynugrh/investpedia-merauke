@@ -6,7 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-// Index is the home page controller
+// Index is the home page delivery
 func (h *Handler) Index(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	renderJSON(w, []byte(`
 		{

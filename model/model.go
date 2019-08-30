@@ -6,6 +6,7 @@ type User struct {
 	gorm.Model
 	Username    string `gorm:"unique"`
 	Password    string
+	LineId		string `gorm:"unique"`
 	Investments []Investment `gorm:"many2many:user_investments;"`
 }
 
